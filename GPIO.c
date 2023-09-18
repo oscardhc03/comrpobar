@@ -15,20 +15,19 @@ volatile static gpio_interrupt_flags_t g_intr_status_flag = {0};
 void PORTA_IRQHandler(void)
 {
 	g_intr_status_flag.flag_port_a = true;
-	GPIO_PortClearInterruptFlagsV2(PORTA, PORTCLEAR);	/* POR HACER: LIMPIAR BANDERA DE HARDWARE SIN SDK */
-//	GPIO_PortClear(PORT_A, PORTCLEAR);
+	GPIO_PortClearInterruptFlagsV2(PORTA, PORTCLEAR);
 }
 
 void PORTC_IRQHandler(void)
 {
 	g_intr_status_flag.flag_port_c = true;
-	GPIO_PortClearInterruptFlagsV2(PORTC, 0xFFFF);	/* POR HACER: LIMPIAR BANDERA DE HARDWARE SIN SDK */
+	GPIO_PortClearInterruptFlagsV2(PORTC, PORTCLEAR);
 }
 
 void CLK_Init(uint32_t CLOCK)
 {
 	CLOCK_SetSimSafeDivs(); 	/* ALWAYS HAVE THIS */
-	SIM5 |= CLOCK;
+	SIM |= CLOCK;
 }
 
 void GPIO_init()
@@ -53,25 +52,26 @@ void GPIO_init()
 				kPORT_UnlockRegister                                     /* Pin Control Register fields [15:0] are not locked */
 			  };
 
-//	GPIO_Init_Pin(GPIO_A, 4u);
 
-	GPIO_PinInitV2(GPIO_A, 4u, &gpio_input_config);	/* check POR HACER: INICIALIZAR PIN DE ENTRADA SIN SDK */
+	GPIO_PinInitV2(GPIO_A, 4u, &gpio_input_config);
 	PORT_SetPinConfig(PORTA, 4u, &button_config);
 	PORT_SetPinInterruptConfig(PORTA, 4u, kPORT_InterruptFallingEdge);
 
-
-	GPIO_PinInit(GPIO_C, 6u, &gpio_input_config);	/* POR HACER: INICIALIZAR PIN DE ENTRADA SIN SDK */
+	GPIO_PinInitV2(GPIO_C, 6u, &gpio_input_config);
 	PORT_SetPinConfig(PORTC, 6u, &button_config);
 	PORT_SetPinInterruptConfig(PORTC, 6u, kPORT_InterruptFallingEdge);
 
 }
-
 
 void PORT_Init_Pin(PORT_t* PORT, uint32_t pin, pin_config_t config)
 {
 	PORT->PCR[pin] = config;
 }
 
+void GPIO_Init_Pin(GPIO_t* GPIO, uint32_t pin)
+{
+	GPIO->PDDR |= (bit_1 << pin);
+}
 
 void GPIO_Set_Pin(GPIO_t* GPIO, uint32_t pin)
 {
@@ -147,23 +147,24 @@ uint8_t GPIO_get_irq_status(GPIO_name_t GPIO)
 
 	return(status);
 }
+
 void GPIO_PinInitV2(GPIO_t* GPIO, uint32_t pin, const gpio_pin_config_t *config)
 {
     assert(NULL != config);
 
     if (config->pinDirection == kGPIO_DigitalInput)
     {
-        // Configurar el pin como entrada
+        // Set the pin as an input
         GPIO->PDDR &= ~(1UL << pin);
     }
     else if (config->pinDirection == kGPIO_DigitalOutput)
     {
-        // Configurar el pin como salida
+        // Set the pin as an output
         GPIO->PDDR |= (1UL << pin);
-
     }
 
 }
+
 void GPIO_PortClearInterruptFlagsV2(PORT_Type *port, uint32_t mask){
 	assert(NULL != port);
 	port->ISFR = mask;

@@ -85,7 +85,6 @@ typedef struct
 	uint8_t flag_port_e : 1;
 } 	gpio_interrupt_flags_t;
 
-
 typedef enum gpio_pin_direction
 {
     kGPIO_DigitalInput,
@@ -100,22 +99,17 @@ typedef struct _gpio_pin_config
 
 
 
-/////
-//uint32_t mask = (1UL << 0) | (1UL << 1);
-
-
-
 void PORTA_IRQHandler(void);
 void PORTC_IRQHandler(void);
-//void CLK_Init(uint32_t CLOCK);
-void GPIO_init();
-//void PORT_Init_Pin(PORT_t* PORT, uint32_t pin, pin_config_t config);
-//void GPIO_Set_Pin(GPIO_t* GPIO, uint32_t pin);
-//uint32_t Get_GPIO_Pin(GPIO_t* GPIO, uint32_t pin);
-//void GPIO_Clear_Pin(GPIO_t* GPIO, uint32_t pin);
-//void GPIO_Invert_Pin(GPIO_t* GPIO, uint32_t pin);
+void CLK_Init(uint32_t CLOCK);
+void GPIO_init(void);
+void PORT_Init_Pin(PORT_t* PORT, uint32_t pin, pin_config_t config);
+void GPIO_Init_Pin(GPIO_t* GPIO, uint32_t pin);
+void GPIO_Set_Pin(GPIO_t* GPIO, uint32_t pin);
+void GPIO_Clear_Pin(GPIO_t* GPIO, uint32_t pin);
+void GPIO_Invert_Pin(GPIO_t* GPIO, uint32_t pin);
+uint32_t Get_GPIO_Pin(GPIO_t* GPIO, uint32_t pin);
 void GPIO_clear_irq_status(GPIO_name_t GPIO);
 uint8_t GPIO_get_irq_status(GPIO_name_t GPIO);
 void GPIO_PinInitV2(GPIO_t* GPIO, uint32_t pin, const gpio_pin_config_t *config);
 void GPIO_PortClearInterruptFlagsV2(PORT_Type *port, uint32_t mask);
-
